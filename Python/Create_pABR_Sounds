@@ -9,7 +9,7 @@ import statistics
 import scipy.signal.windows
 
 
-def create_pABR_sounds(freqs = None, stim_rate = 40, epoch_dur = 100, f_samp = 44100, n_cycles = 5, edge_skip = 0.05, plot_flag = True): #True = 1
+def Create_pABR_Sounds(freqs = None, stim_rate = 40, epoch_dur = 100, f_samp = 44100, n_cycles = 5, edge_skip = 0.05, plot_flag = True): #True = 1
     if freqs is None:
         freqs = np.array([1000, 2000, 4000, 8000, 16000]) 
 
@@ -85,4 +85,4 @@ def create_pABR_sounds(freqs = None, stim_rate = 40, epoch_dur = 100, f_samp = 4
     return s_l, s_r, ix_l, ix_r
 
 #Call function
-s_l, s_r, ix_l, ix_r = create_pABR_sounds(None, 40, 100, 44100, 5, 0.05, 1)
+s_l, s_r, ix_l, ix_r = Create_pABR_Sounds(None, 40, 100, 44100, 5, 0.05, 1)
