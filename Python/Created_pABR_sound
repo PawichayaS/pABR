@@ -78,3 +78,5 @@ def create_pABR_sounds(freqs=None, stim_rate=40, epoch_dur=100, f_samp=44100, n_
         plt.show()
 
     return s_l, s_r, ix_l, ix_r
+
+s_l, s_r, ix_l, ix_r = create_pABR_sounds(None, 40, 100, 44100, 5, 0.05, 1)
