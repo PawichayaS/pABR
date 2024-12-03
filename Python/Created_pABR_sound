@@ -7,3 +7,74 @@ import scipy.io
 import matplotlib.pyplot as plt
 import statistics
 import scipy.signal.windows
+
+
+def create_pABR_sounds(freqs=None, stim_rate=40, epoch_dur=100, f_samp=44100, n_cycles=5, edge_skip=0.05, plot_flag=True): #true=1
+    if freqs is None:
+        freqs = np.array([1000, 2000, 4000, 8000, 16000]) 
+    
+    waves = [] 
+    for i_freq in range(len(freqs)):
+        dur = int(np.ceil(n_cycles * f_samp / freqs[i_freq])) 
+        win = np.blackman(dur) 
+        dur = n_cycles / freqs[i_freq]
+        t = np.arange(0, np.ceil(dur * f_samp)) / f_samp 
+        waves.append(np.cos(2 * np.pi * freqs[i_freq] * t) * win) 
+    
+    dur = int(np.floor(epoch_dur * f_samp))
+    s_l = np.zeros(dur)
+    s_r = np.zeros(dur)
+
+    edge = int(np.floor(edge_skip * f_samp))
+    ix_all = np.arange(edge, dur - edge) 
+
+    polarity = 1
+
+    ix_l = []
+    ix_r = []
+
+    for i_freq in range(len(freqs)):
+     
+        ix = np.random.permutation(ix_all) 
+        ix_l.append(np.sort(ix[:int(stim_rate * epoch_dur)])) 
+
+        for i_stim in range(stim_rate * epoch_dur):
+            rng = np.arange(ix[i_stim] - int(np.ceil(len(waves[i_freq]) / 2)),
+                            ix[i_stim] - int(np.ceil(len(waves[i_freq]) / 2)) + len(waves[i_freq]))
+            s_l[rng] = s_l[rng] + polarity * waves[i_freq]
+            polarity = -polarity
+     
+        ix = np.random.permutation(ix_all) 
+        ix_r.append(np.sort(ix[:int(stim_rate * epoch_dur)])) 
+
+        for i_stim in range(stim_rate * epoch_dur):
+            rng = np.arange(ix[i_stim] - int(np.ceil(len(waves[i_freq]) / 2)),
+                            ix[i_stim] - int(np.ceil(len(waves[i_freq]) / 2)) + len(waves[i_freq]))
+            s_r[rng] = s_r[rng] + polarity * waves[i_freq]
+            polarity = -polarity
+
+    if plot_flag:
+        x_max = int(np.floor(f_samp / 15))
+        t = np.arange(1, dur + 1) / f_samp 
+        plt.figure()
+        
+        # fig = plt.figure(figsize=(20,20))
+        plt.subplot(2, 1, 1)
+        plt.title(['Left Channel'], fontsize = 10)
+        plt.plot(t[:x_max], s_l[:x_max])
+        for i_freq in range(len(freqs)):
+            x = ix_l[i_freq][0]
+            plt.text(t[x], 1-np.log(freqs[i_freq])/10, str(freqs[i_freq]), fontsize = 10) 
+        plt.xlabel('Time (s)', fontsize = 10) 
+
+        plt.subplot(2, 1, 2)
+        plt.title(['Right Channel'], fontsize = 10)
+        plt.plot(t[:x_max], s_r[:x_max])
+        for i_freq in range(len(freqs)):
+            x = ix_r[i_freq][0]
+            plt.text(t[x], 1-np.log(freqs[i_freq])/10, str(freqs[i_freq]), fontsize = 10) 
+        plt.xlabel('Time (s)', fontsize = 10)
+        
+        plt.show()
+
+    return s_l, s_r, ix_l, ix_r
