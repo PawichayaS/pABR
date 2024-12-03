@@ -9,7 +9,7 @@ import statistics
 import scipy.signal.windows
 
 
-def create_pABR_sounds(freqs=None, stim_rate=40, epoch_dur=100, f_samp=44100, n_cycles=5, edge_skip=0.05, plot_flag=True): #true=1
+def create_pABR_sounds(freqs = None, stim_rate = 40, epoch_dur = 100, f_samp = 44100, n_cycles = 5, edge_skip = 0.05, plot_flag = True): #True = 1
     if freqs is None:
         freqs = np.array([1000, 2000, 4000, 8000, 16000]) 
 
@@ -37,7 +37,7 @@ def create_pABR_sounds(freqs=None, stim_rate=40, epoch_dur=100, f_samp=44100, n_
 
     for i_freq in range(len(freqs)):
 
-        # for left channel
+        # for the left channel
         ix = np.random.permutation(ix_all) 
         ix_l.append(np.sort(ix[:int(stim_rate * epoch_dur)])) 
 
@@ -47,7 +47,7 @@ def create_pABR_sounds(freqs=None, stim_rate=40, epoch_dur=100, f_samp=44100, n_
             s_l[rng] = s_l[rng] + polarity * waves[i_freq]
             polarity = -polarity
 
-        # for right channel
+        # for the right channel
         ix = np.random.permutation(ix_all) 
         ix_r.append(np.sort(ix[:int(stim_rate * epoch_dur)])) 
 
@@ -57,7 +57,7 @@ def create_pABR_sounds(freqs=None, stim_rate=40, epoch_dur=100, f_samp=44100, n_
             s_r[rng] = s_r[rng] + polarity * waves[i_freq]
             polarity = - polarity
 
-    # plot the sound and label the first tone for each frequency
+    # Plot the sound and label the first tone for each frequency
     if plot_flag:
         x_max = int(np.floor(f_samp / 15))
         t = np.arange(1, dur + 1) / f_samp 
@@ -84,5 +84,5 @@ def create_pABR_sounds(freqs=None, stim_rate=40, epoch_dur=100, f_samp=44100, n_
 
     return s_l, s_r, ix_l, ix_r
 
-#call function
+#Call function
 s_l, s_r, ix_l, ix_r = create_pABR_sounds(None, 40, 100, 44100, 5, 0.05, 1)
