@@ -1,0 +1,22 @@
+def Analyze_Signal_And_Noise(signal, noise):
+
+    n_samps, n_freqs, n_levels, n_trials = signal.shape
+    n_noise = noise.shape[1]
+    
+    avg_signal = np.median(signal, axis=3)
+    avg_noise = np.median(noise, axis=3)
+    
+    tot_var = np.var(avg_signal, axis=0)
+    noise_var = np.var(avg_noise, axis=0)
+    
+    log_tot_var = np.log(tot_var)
+    
+    mean_log_noise_var = np.mean(np.log(noise_var), axis=0)
+    std_log_noise_var = np.std(np.log(noise_var), axis=0)
+   
+    mean_log_noise_var = np.tile(mean_log_noise_var, (n_freqs, 1))
+    std_log_noise_var = np.tile(std_log_noise_var, (n_freqs, 1))
+ 
+    snr_std = (log_tot_var - mean_log_noise_var) / std_log_noise_var
+    
+    return tot_var, noise_var, log_tot_var, mean_log_noise_var, std_log_noise_var, snr_std
