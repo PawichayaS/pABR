@@ -15,7 +15,7 @@ scipy.io
 git clone https://github.com/PawichayaS/pABR/blob/main/Python/Extract_Signal_And_Noise
 
 import sys
-sys.path.append("path/to/repo-name")
+sys.path.append("https://github.com/PawichayaS/pABR/blob/main/Python/Analysis_pABR_Main")
      
   
 
