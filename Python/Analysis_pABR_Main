@@ -97,9 +97,58 @@ return signal, noise
 
 
 
+## load Example_Signal_And_Noise.Mat
 
+Example_Signal_And_Noise = hdf5storage.loadmat('Example_Signal_And_Noise.mat')
 
+signal = Example_Signal_And_Noise["Signal"]
+noise = Example_Signal_And_Noise["Noise"] 
 
+tot_var,noise_var,log_tot_var,mean_log_noise_var,std_log_noise_var,snr_std = Analyze_Signal_And_Noise(signal, noise) 
+
+variables_data = {
+    'tot_var': tot_var,
+    'noise_var': noise_var,
+    'log_tot_var': log_tot_var,
+    'mean_log_noise_var': mean_log_noise_var,
+    'std_log_noise_var': std_log_noise_var,
+    'snr_std': snr_std
+    }
+savemat('Example_Signal_And_Noise_Analysis.mat', variables_data)
+
+#Analyze signal and noise and estimate threshold
+
+levels = np.arange(0, 101, 10)  #Sound levels in dB SPL for each recording
+freqs = np.array([1, 2, 4, 8, 16]) #pABR tone frequencies
+
+std_thresh = 4.264  #Corresponding to p < 1e-5
+
+#Interpolate to 1 dB resolution
+interp_func = sp.interp1d(levels, snr_std, axis=1)
+temp = interp_func(np.arange(levels[0], levels[-1] + 1))
+
+#Plot figure
+thresh = []
+
+plt.figure(figsize=(20, 8))
+for i_freq, freq in enumerate(freqs):
+    thresh_level = np.argmax(temp[:, i_freq] > std_thresh) + levels[0]
+    thresh.append(thresh_level)
+
+    plt.subplot(1, len(freqs), i_freq + 1)
+    plt.plot(levels, snr_std[i_freq, :], label='SNR Std')
+    plt.axhline(y=std_thresh, color='r', linestyle='--', label='Threshold')
+    plt.axvline(x=thresh_level, color='g', linestyle='--', label='Threshold Level')
+    plt.plot(thresh_level, 0, 'o', label=f'Threshold @ {thresh_level} dB')
+    plt.ylim([-2, 22])
+    plt.xlabel('Sound Level (dB SPL)')
+    plt.ylabel('Amplitude')
+    plt.title(f'Frequency: {freq} kHz')
+    plt.legend()
+
+plt.suptitle('ABR amplitude expressed as standard deviations above amplitude expected by chance')
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+plt.show()
 
 
 
