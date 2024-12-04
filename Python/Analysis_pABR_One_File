@@ -12,7 +12,7 @@ from plotly.subplots import make_subplots
 import hdf5storage
 scipy.io
 
-#Analysis pABR One File
+## Analysis pABR One File
 # Inputs:
 # voltage   -   the recorded voltage [samps x 1]
 # triggers  -   the start sample of each tone [freqs x trials]
