@@ -62,3 +62,5 @@ combine_data = {'Signal': signals,
 hdf5storage.savemat('Example_Signal_And_Noise.mat', combine_data, format = 7.3, matlab_compatible = True, compress = True)
 
 
+
+
