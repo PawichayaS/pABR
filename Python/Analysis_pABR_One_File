@@ -12,3 +12,85 @@ from plotly.subplots import make_subplots
 import hdf5storage
 scipy.io
 
+#Analysis pABR One File
+# Inputs:
+# voltage   -   the recorded voltage [samps x 1]
+# triggers  -   the start sample of each tone [freqs x trials]
+# f_samp    -   the sampling rate of the recording
+# offset    -   the start time of the averaging window relative to the tone
+# dur       -   the duration of the averaging window
+# n_noise   -   the number of independent random samples for estimating chance
+# raw_flag  -   1 to return median over trials, 0 to return all trials
+# plot_flag -   1 to plot results, 0 otherwise
+
+# Outputs:
+# signal    -   the average voltage in the window following each tone
+# noise     -   the average voltage in random windows
+
+# Note that alternating polarity tones at each frequency are assumed
+
+def Extract_Signal_And_Noise(voltage, triggers, f_samp = 44100, offset = 0.092 , dur = 0.011, n_noise = 32, median_flag = 0, plot_flag = 0): 
+    
+    offset_samps = int(np.floor(offset * f_samp)) 
+    avg_samps = int(np.floor(dur * f_samp))
+    trial_samps = voltage.shape[0] 
+    n_freqs, n_tones = triggers.shape 
+
+    signal = np.full((avg_samps + 1, n_freqs, n_tones), np.nan) 
+    noise = np.full((avg_samps + 1, n_noise, n_tones), np.nan)
+   
+    # Grab the voltage in the window following each trigger
+    for i_freq in range(n_freqs): 
+        for i_tone in range(n_tones):  
+            rng = np.arange(triggers[i_freq, i_tone] + offset_samps, triggers[i_freq, i_tone] + offset_samps + avg_samps + 1) 
+            
+            if rng[-1] < trial_samps: # If too close to beginning or end to grab a full waveform, then skip
+                signal[:, i_freq, i_tone] = voltage[rng,0]
+
+    # Grab the voltage in random windows
+    for i_noise in range(n_noise): 
+        for i_tone in range(n_tones):
+            temp = np.random.randint(trial_samps) 
+            rng = np.arange(temp + offset_samps, temp + offset_samps + avg_samps + 1) 
+            
+            while rng[0] < 0 or rng[-1] >= trial_samps: #If too close to beginning or end to grab a full waveform, try again
+                temp = np.random.randint(trial_samps)    
+                rng = np.arange(temp + offset_samps, temp + offset_samps + avg_samps +1)
+            
+            noise[:, i_noise, i_tone] = voltage[rng,0]
+            continue
+
+    if median_flag: 
+        signal = np.nanmedian(signal, axis=2)    
+        noise = np.nanmedian(noise, axis=2)
+
+    if plot_flag: 
+        plt.figure()
+        dt = 1 / f_samp
+
+        if median_flag:
+            y_max = np.max(np.abs(signal[:])) 
+        else:
+            temp = np.median(signal,axis = 2)
+            y_max = np.max(np.abs(temp[:]))
+            
+        t = np.arange(dt, (avg_samps + 1) * dt, dt)  
+        
+        for i_freq in range(n_freqs): 
+            plt.subplot(1, n_freqs , i_freq + 1)
+
+            if median_flag:
+                plt.plot(1000 * t, noise, 'k')
+                plt.plot(1000 * t, signal[:, i_freq], 'r')
+
+            else:
+                plt.plot(1000 * t, np.median(noise, axis = 1),'k')
+                plt.plot(1000 * t, np.median(signal[:,i_freq,:],axis = 1),'r')
+
+        plt.xlabel('Time (ms)')
+        plt.ylim([-y_max, y_max])
+        plt.gca().set_Ylim([-y_max, y_max])
+        plt.show()
+
+
+    return signal, noise
