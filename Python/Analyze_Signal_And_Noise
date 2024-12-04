@@ -1,4 +1,4 @@
-# Analyze the signal and noise for 1 file
+## Analyze the signal and noise for 1 file ##
 
 def Analyze_Signal_And_Noise(signal, noise):
 
@@ -26,7 +26,7 @@ def Analyze_Signal_And_Noise(signal, noise):
 
 
 
-# Analyze the signal and noise variable for X files and save in a file
+## Analyze the signal and noise variable for X files and save in a file ##
 
 # This script analyses a set of pABR recordings.
 # Each file "Example_Voltage_And_Triggers_X" contains the recording
