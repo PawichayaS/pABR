@@ -1,3 +1,5 @@
+# Analyze the signal and noise for 1 file
+
 def Analyze_Signal_And_Noise(signal, noise):
 
     n_samps, n_freqs, n_levels, n_trials = signal.shape
@@ -20,3 +22,43 @@ def Analyze_Signal_And_Noise(signal, noise):
     snr_std = (log_tot_var - mean_log_noise_var) / std_log_noise_var
     
     return tot_var, noise_var, log_tot_var, mean_log_noise_var, std_log_noise_var, snr_std
+
+
+
+
+# Analyze the signal and noise variable for X files and save in a file
+
+# This script analyses a set of pABR recordings.
+# Each file "Example_Voltage_And_Triggers_X" contains the recording
+# made at X dB SPL and onset indices for 1000 tones at 1, 2, 4, 8, and 16kHz.
+
+# Extract signal and noise from raw data files
+
+signal_list = [] 
+noise_list = []
+
+for i in range(0, 110, 10): 
+    filenames = f'/Volumes/My_Passport/Go_for_Github/Example_Voltage_And_Triggers_{i}.mat'
+    all_data = scipy.io.loadmat(filenames)
+
+    voltage = all_data["voltage"]
+    triggers = all_data["triggers"] 
+    
+    signal, noise = Extract_Signal_And_Noise(voltage, triggers, 44100, 0.08, 0.035, 32, 0, 0)
+   
+    signal_list.append(signal)
+
+    noise_list.append(noise)
+    
+signals = np.array(signal_list) 
+signals= np.moveaxis(signals, 0, 2)
+   
+noises = np.array(noise_list)
+noises = np.moveaxis(noises, 0, 2)
+
+combine_data = {'Signal': signals,
+                'Noise': noises}
+
+hdf5storage.savemat('Example_Signal_And_Noise.mat', combine_data, format = 7.3, matlab_compatible = True, compress = True)
+
+
