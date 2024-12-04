@@ -78,3 +78,6 @@ def Extract_Signal_And_Noise(voltage, triggers, f_samp = 44100, offset = 0.092 ,
         plt.show()
 
     return signal, noise
+
+
+
