@@ -21,7 +21,7 @@ def Analyze_Signal_And_Noise(signal, noise):
  
     snr_std = (log_tot_var - mean_log_noise_var) / std_log_noise_var
     
-    return tot_var, noise_var, log_tot_var, mean_log_noise_var, std_log_noise_var, snr_std
+return tot_var, noise_var, log_tot_var, mean_log_noise_var, std_log_noise_var, snr_std
 
 
 
