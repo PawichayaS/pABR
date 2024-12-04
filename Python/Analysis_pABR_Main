@@ -12,7 +12,10 @@ from plotly.subplots import make_subplots
 import hdf5storage
 scipy.io
 
- git cone https://github.com/PawichayaS/pABR/blob/main/Python/Extract_Signal_And_Noise
+git clone https://github.com/PawichayaS/pABR/blob/main/Python/Extract_Signal_And_Noise
+
+import sys
+sys.path.append("path/to/repo-name")
      
   
 
