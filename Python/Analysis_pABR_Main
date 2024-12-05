@@ -19,13 +19,9 @@ sys.path.append("https://github.com/PawichayaS/pABR/blob/main/Python/Extract_Sig
      
 from module_name import Extract_Signal_And_Noise
 
+https://github.com/PawichayaS/pABR/blob/main/Python/Analyze_Signal_And_Noise
+
 result = function_name(args)
-
-
-
-
-
-
 
 
 
