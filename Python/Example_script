@@ -13,18 +13,9 @@ from plotly.subplots import make_subplots
 import hdf5storage
 scipy.io
 
-git clone https://github.com/PawichayaS/pABR/blob/main/Python/Analysis_pABR_Main.git
-
-sys.path.append("https://github.com/PawichayaS/pABR/blob/main/Python/Extract_Signal_And_Noise.git")
-     
-from module_name import Extract_Signal_And_Noise
-
-https://github.com/PawichayaS/pABR/blob/main/Python/Analyze_Signal_And_Noise
-
-result = function_name(args)
-
-
-
+# This script analyses a set of pABR recordings.
+# Each file "Example_Voltage_And_Triggers_X" contains the recording
+# made at X dB SPL and onset indices for 1000 tones at 1, 2, 4, 8, and 16kHz.
 
 ## load Example_Signal_And_Noise.Mat ##
 
@@ -46,8 +37,8 @@ variables_data = {
     'snr_std': snr_std
     }
 
+#save as mat file names the "Example_Signal_And_Noise_Analysis.mat" with variable_data set 
 savemat('Example_Signal_And_Noise_Analysis.mat', variables_data)
-
 
 ## Analyze signal and noise and estimate threshold ##
 
