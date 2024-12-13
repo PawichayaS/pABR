@@ -30,7 +30,7 @@ It is crucial to import the necessary libraries before starting the code, as the
 
 To create sounds, we use the Create_pABR_Sounds function located in the Python folder. The input variables are detailed in the comments. After executing the function, we call it to generate the results.
 
-To analyze recorded sounds, we use the functions Extract_Signal_And_Noise.ipynb and Analyze_Signal_And_Noise.
+To analyze recorded sounds, we use the functions Extract_Signal_And_Noise and Analyze_Signal_And_Noise.
 
 To understand how these functions are utilized for analysis, refer to the example dataset. See the Example_Script.
 
