@@ -20,4 +20,23 @@ It should produce the following plot:
 
 Each panel shows the results for one frequency (1, 2, 4, 8, and 16kHz), with the ABR amplitude (in d'-like units) plotted against the sound level (in dB SPL) with the threshold indicated.
 
+
+
+
+
 **Python**
+
+In Python, we use the Create_pABR_Sounds.ipynb function in the Python folder to create sounds. It is essential to import the necessary libraries before coding, as they facilitate the execution and generation of the desired sounds. All required libraries are demonstrated within the script. Input variables are explained in the comments. After running the function, we call it to obtain the results.
+
+To analyze recorded sounds, we use the functions Extract_Signal_And_Noise.ipynb and Analyze_Signal_And_Noise.ipynb.
+
+To understand how these functions are utilized for analysis, refer to the example dataset. See the Example_Script.ipynb.
+
+The execution of the script should produce the following plot:
+
+
+![image](https://github.com/user-attachments/assets/b0dd8f81-fac3-4487-9ca5-79cb81c70a4f)
+
+
+
+
