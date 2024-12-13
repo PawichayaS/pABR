@@ -28,7 +28,7 @@ Each panel shows the results for one frequency (1, 2, 4, 8, and 16kHz), with the
 
 It is crucial to import the necessary libraries before starting the code, as they enable the execution and generation of the desired sounds. All the required libraries are showcased within the script.
 
-To create sounds, we use the Create_pABR_Sounds function located in the Python folder. The input variables are detailed in the comments. After executing the function, we call it to generate the results.
+To create sounds, we use the Create_pABR_Sounds function located in the Python folder. The input variables are detailed in the comments. After executing we then call the function to generate the results.
 
 To analyze recorded sounds, we use the functions Extract_Signal_And_Noise and Analyze_Signal_And_Noise.
 
