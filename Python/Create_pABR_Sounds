@@ -12,6 +12,18 @@ from scipy.io import savemat
 from plotly.subplots import make_subplots
 scipy.io
 
+# This module creates pABR sounds. It returns two sound vectors, one for each ear,
+# as well as the samples within the sound vectors at which the tones at each frequency occur. 
+# The input parameters are decsribed next to the default value assignments below.
+
+# Sound parameters
+# freqs - Tone frequencies to include (Hz)
+# stim_rate - Number of tones per second for each frequency - keep this number even!
+# epoch_dur - Total duration of sound (s)
+# f_samp - Sampling rate for sound (Hz)
+# n_cycles - Number of cycles per tone pip
+# edge_skip - Don't put any tones this close to the start or end of file (s)
+# plot_flag - Plot the first few tones?
 
 def Create_pABR_Sounds(freqs = None, stim_rate = 40, epoch_dur = 100, f_samp = 44100, n_cycles = 5, edge_skip = 0.05, plot_flag = True): #True = 1
     if freqs is None:
