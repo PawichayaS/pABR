@@ -17,7 +17,124 @@ scipy.io
 # Each file "Example_Voltage_And_Triggers_X" contains the recording
 # made at X dB SPL and onset indices for 1000 tones at 1, 2, 4, 8, and 16kHz.
 
-# Extract signal and noise from raw data files
+def Extract_Signal_And_Noise(voltage, triggers, f_samp = 44100, offset = 0.092 , dur = 0.011, n_noise = 32, median_flag = 0, plot_flag = 0): 
+    
+    # Inputs:
+    # voltage   -   the recorded voltage [samps x 1]
+    # triggers  -   the start sample of each tone [freqs x trials]
+    # f_samp    -   the sampling rate of the recording
+    # offset    -   the start time of the averaging window relative to the tone
+    # dur       -   the duration of the averaging window
+    # n_noise   -   the number of independent random samples for estimating chance
+    # raw_flag  -   1 to return median over trials, 0 to return all trials
+    # plot_flag -   1 to plot results, 0 otherwise
+
+    # Outputs:
+    # signal    -   the average voltage in the window following each tone
+    # noise     -   the average voltage in random windows
+
+    # Note that alternating polarity tones at each frequency are assumed
+
+    offset_samps = int(np.floor(offset * f_samp)) 
+    avg_samps = int(np.floor(dur * f_samp))
+    trial_samps = voltage.shape[0] 
+    n_freqs, n_tones = triggers.shape 
+
+    signal = np.full((avg_samps + 1, n_freqs, n_tones), np.nan) 
+    noise = np.full((avg_samps + 1, n_noise, n_tones), np.nan)
+   
+    # Grab the voltage in the window following each trigger
+    for i_freq in range(n_freqs): 
+        for i_tone in range(n_tones):  
+            rng = np.arange(triggers[i_freq, i_tone] + offset_samps, triggers[i_freq, i_tone] + offset_samps + avg_samps + 1) 
+            
+            if rng[-1] < trial_samps: # If too close to beginning or end to grab a full waveform, then skip
+                signal[:, i_freq, i_tone] = voltage[rng,0]
+
+    # Grab the voltage in random windows
+    for i_noise in range(n_noise): 
+        for i_tone in range(n_tones):
+            temp = np.random.randint(trial_samps) 
+            rng = np.arange(temp + offset_samps, temp + offset_samps + avg_samps + 1) 
+            
+            while rng[0] < 0 or rng[-1] >= trial_samps: #If too close to beginning or end to grab a full waveform, try again
+                temp = np.random.randint(trial_samps)    
+                rng = np.arange(temp + offset_samps, temp + offset_samps + avg_samps +1)
+            
+            noise[:, i_noise, i_tone] = voltage[rng,0]
+            continue
+
+    if median_flag: 
+        signal = np.nanmedian(signal, axis=2)    
+        noise = np.nanmedian(noise, axis=2)
+
+    if plot_flag: 
+        plt.figure()
+        dt = 1 / f_samp
+
+        if median_flag:
+            y_max = np.max(np.abs(signal[:])) 
+        else:
+            temp = np.median(signal,axis = 2)
+            y_max = np.max(np.abs(temp[:]))
+            
+        t = np.arange(dt, (avg_samps + 1) * dt, dt)  
+        
+        for i_freq in range(n_freqs): 
+            plt.subplot(1, n_freqs , i_freq + 1)
+
+            if median_flag:
+                plt.plot(1000 * t, noise, 'k')
+                plt.plot(1000 * t, signal[:, i_freq], 'r')
+
+            else:
+                plt.plot(1000 * t, np.median(noise, axis = 1),'k')
+                plt.plot(1000 * t, np.median(signal[:,i_freq,:],axis = 1),'r')
+
+        plt.xlabel('Time (ms)')
+        plt.ylim([-y_max, y_max])
+        plt.gca().set_Ylim([-y_max, y_max])
+        plt.show()
+
+    return signal, noise
+
+def Analyze_Signal_And_Noise(signal, noise):
+
+    # Inputs:
+    # signal    -   the average voltage in the window following each tone [time bins x freqs x levels x trials]
+    # noise     -   the average voltage in random windows [time bins x noise_instances x levels x trials]
+
+    # Outputs:
+    # tot_var   -   the total variance over time of the ABR waveform for each frequency and level after averaging across trials [freqs x levels]
+    # noise_var -   the noise variance in the ABR waveform for each noise instance and level after averaging across trials [noise_instances x levels]
+    # log_tot_var - the log of tot_var [freqs x levels]
+    # mean_log_noise_var - the mean over noise instances of the log of noise_var, repeated to match the number of frequencies [freqs x levels]
+    # std_log_noise_var  - the standard deviation over noise instances of the log of noise_var, repeated to match the number of frequencies [freqs x levels]
+    # snr_std   - the signal-to-noise ration of the estimated ABR expressed in terms of the standard deviation of the noise distribution [freqs x levels]
+
+    n_samps, n_freqs, n_levels, n_trials = signal.shape
+    n_noise = noise.shape[1]
+    
+    avg_signal = np.median(signal, axis=3)
+    avg_noise = np.median(noise, axis=3)
+    
+    tot_var = np.var(avg_signal, axis=0)
+    noise_var = np.var(avg_noise, axis=0)
+    
+    log_tot_var = np.log(tot_var)
+    
+    mean_log_noise_var = np.mean(np.log(noise_var), axis=0)
+    std_log_noise_var = np.std(np.log(noise_var), axis=0)
+   
+    mean_log_noise_var = np.tile(mean_log_noise_var, (n_freqs, 1))
+    std_log_noise_var = np.tile(std_log_noise_var, (n_freqs, 1))
+ 
+    snr_std = (log_tot_var - mean_log_noise_var) / std_log_noise_var
+    
+    return tot_var, noise_var, log_tot_var, mean_log_noise_var, std_log_noise_var, snr_std
+
+
+## Extract signal and noise from raw data files ## 
 
 signal_list = [] 
 noise_list = []
